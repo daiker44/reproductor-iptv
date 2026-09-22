@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>IPTV Player Pro</title>
+  <!-- Librería Oficial de Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Reproductor HLS -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <style>
+    :root { --bg-main: #0a0e17; --bg-card: #151c28; --accent-blue: #00d2ff; --accent-orange: #ff9900; --text: #ffffff; --text-muted: #8a99ad; --border: #222d3d; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; user-select: none; }
+    body { background-color: var(--bg-main); color: var(--text); width: 100vw; height: 100vh; overflow: hidden; display: flex; }
+    
+    .screen { display: none; width: 100%; height: 100%; }
+    .active-screen { display: flex !important; }
+
+    #auth-screen { justify-content: center; align-items: center; background: radial-gradient(circle, #151c28 0%, #0a0e17 100%); flex-direction: column; }
+    .login-box { background: var(--bg-card); padding: 25px; border-radius: 12px; width: 90%; max-width: 380px; border: 1px solid var(--border); text-align: center; }
+    .login-box h1 { color: var(--accent-blue); font-size: 22px; margin-bottom: 15px; font-weight: 800; }
+    
+    .mac-badge-container { background: #0b1019; border: 1px dashed var(--accent-blue); padding: 10px; border-radius: 8px; margin-bottom: 15px; }
+    .mac-title { font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+    .mac-row { display: flex; justify-content: space-between; align-items: center; }
+    .mac-value { font-family: monospace; font-size: 14px; color: var(--accent-orange); font-weight: bold; }
+    .btn-copy { background: var(--accent-blue); color: #000; border: none; padding: 4px 8px; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+    
+    .input-field { width: 100%; padding: 11px; margin: 6px 0; background: #0b1019; border: 1px solid var(--border); color: #fff; border-radius: 6px; outline: none; font-size: 13px; text-align: center; }
+    .remember-container { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 10px 0; font-size: 11px; color: var(--text-muted); }
+    .btn-login { width: 100%; padding: 12px; background: linear-gradient(90deg, #00d2ff, #0072ff); border: none; color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 13px; margin-top: 8px; text-transform: uppercase; }
+
+    #main-screen { flex-direction: column; }
+    .top-header { height: 50px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 15px; }
+    .brand-logo { font-size: 16px; font-weight: 900; color: var(--accent-blue); }
+    .list-selector-container { display: flex; align-items: center; gap: 8px; }
+    .list-select { background: #0b1019; color: #fff; border: 1px solid var(--border); padding: 5px 10px; border-radius: 6px; font-size: 11px; outline: none; }
+    
+    .content-container { flex: 1; display: flex; overflow: hidden; }
+    .channels-sidebar { width: 280px; background: #0d121d; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+    .cat-dropdown { padding: 8px; background: var(--bg-card); border-bottom: 1px solid var(--border); }
+    .cat-dropdown select { width: 100%; padding: 6px; background: #0b1019; color: #fff; border: 1px solid var(--border); border-radius: 4px; font-size: 11px; outline: none; }
+    .channel-list { flex: 1; overflow-y: auto; padding: 6px; }
+    .channel-item { display: flex; align-items: center; padding: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 5px; margin-bottom: 5px; cursor: pointer; }
+    .channel-item img { width: 32px; height: 32px; object-fit: contain; margin-right: 8px; background: #000; border-radius: 4px; }
+    .ch-name { font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .player-area { flex: 1; display: flex; flex-direction: column; background: #05070a; }
+    .video-container { width: 100%; height: 65%; background: #000; }
+    video { width: 100%; height: 100%; }
+    .epg-panel { flex: 1; padding: 12px; background: var(--bg-card); border-top: 1px solid var(--border); }
+    .epg-title { font-size: 14px; font-weight: bold; color: var(--accent-blue); margin-bottom: 4px; }
+    .epg-desc { font-size: 11px; color: var(--text-muted); }
+
+    .loader { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(10,14,23,0.95); display:none; flex-direction:column; justify-content:center; align-items:center; z-index:99; }
+    .spinner { width: 35px; height: 35px; border: 3px solid var(--border); border-top-color: var(--accent-blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <!-- PANTALLA DE LOGIN -->
+  <div id="auth-screen" class="screen active-screen">
+    <div class="login-box">
+      <h1>XCIPTV PLAYER</h1>
+      <div class="mac-badge-container">
+        <div class="mac-title">Dirección MAC del Dispositivo</div>
+        <div class="mac-row">
+          <span id="display-mac" class="mac-value">Cargando...</span>
+          <button class="btn-copy" onclick="copiarMAC()">COPIAR</button>
+        </div>
+      </div>
+      <input type="text" id="user-input" class="input-field" placeholder="Usuario">
+      <input type="password" id="pass-input" class="input-field" placeholder="Contraseña">
+      <div class="remember-container">
+        <input type="checkbox" id="remember-check" checked>
+        <label for="remember-check">Recordar credenciales</label>
+      </div>
+      <button class="btn-login" onclick="validarYEntrar()">INGRESAR</button>
+    </div>
+  </div>
+
+  <!-- PANTALLA PRINCIPAL -->
+  <div id="main-screen" class="screen">
+    <div class="top-header">
+      <div class="brand-logo">XCIPTV</div>
+      <div class="list-selector-container">
+        <select id="m3u-select" class="list-select" onchange="cambiarListaM3U()"></select>
+        <button onclick="cerrarSesion()" style="background:#da3633; border:none; color:#fff; padding:5px 8px; border-radius:4px; font-size:10px; cursor:pointer;">Salir</button>
+      </div>
+    </div>
+
+    <div class="content-container">
+      <div class="channels-sidebar">
+        <div class="cat-dropdown">
+          <select id="category-select" onchange="renderizarCanalesPorCategoria()"></select>
+        </div>
+        <div class="channel-list" id="channel-list"></div>
+      </div>
+      <div class="player-area">
+        <div class="video-container">
+          <video id="exoplayer" controls autoplay></video>
+        </div>
+        <div class="epg-panel">
+          <div id="epg-title" class="epg-title">Selecciona un canal</div>
+          <div id="epg-desc" class="epg-desc">Presiona un canal de la lista izquierda para iniciar la reproducción.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARGADOR -->
+  <div id="loader" class="loader">
+    <div class="spinner"></div>
+    <div id="loader-msg" style="color:var(--accent-blue); font-size:12px; margin-top:10px; font-weight:bold;">Conectando...</div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://cmdnbchacerfdimchave.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtZG5iY2hhY2VyZmRpbWNoYXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwMzIwMjEsImV4cCI6MjEwNTYwODAyMX0.e9FTXFYmYLd0Jql6fn_BjKnvkV7SkWChwGIwHwOgqJ4";
+
+    // Inicializar el cliente oficial de Supabase
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let deviceMAC = "";
+    let listasUsuario = [];
+    let itemsParseados = [];
+    let hlsPlayer = null;
+
+    window.onload = () => {
+      obtenerMAC();
+      verificarAutologin();
+    };
+
+    function obtenerMAC() {
+      let mac = localStorage.getItem("DEVICE_MAC");
+      if (!mac) {
+        const hex = "0123456789ABCDEF";
+        let arr = [];
+        for (let i = 0; i < 6; i++) {
+          arr.push(hex.charAt(Math.floor(Math.random() * 16)) + hex.charAt(Math.floor(Math.random() * 16)));
+        }
+        mac = arr.join(":");
+        localStorage.setItem("DEVICE_MAC", mac);
+      }
+      deviceMAC = mac;
+      document.getElementById('display-mac').innerText = deviceMAC;
+    }
+
+    function copiarMAC() {
+      navigator.clipboard.writeText(deviceMAC);
+      alert("MAC copiada: " + deviceMAC);
+    }
+
+    async function validarYEntrar() {
+      const u = document.getElementById('user-input').value.trim();
+      const p = document.getElementById('pass-input').value.trim();
+      const remember = document.getElementById('remember-check').checked;
+
+      if (!u || !p) return alert("Por favor ingresa usuario y contraseña.");
+
+      mostrarLoader("Validando usuario...");
+
+      try {
+        // 1. Validar Usuario y Contraseña usando la SDK Oficial
+        const { data: users, error: errUser } = await _supabase
+          .from('usuarios')
+          .select('*')
+          .eq('usuario', u)
+          .eq('password', p);
+
+        if (errUser) throw new Error(errUser.message);
+
+        if (!users || users.length === 0) {
+          ocultarLoader();
+          return alert("❌ Usuario o contraseña incorrectos.");
+        }
+
+        const user = users[0];
+
+        // 2. Estado Activo
+        if (!user.activo) {
+          ocultarLoader();
+          return alert("❌ Tu cuenta está desactivada.");
+        }
+
+        // 3. Expiración
+        if (user.fecha_expiracion) {
+          const ahora = new Date();
+          const expiracion = new Date(user.fecha_expiracion);
+          if (ahora > expiracion) {
+            ocultarLoader();
+            return alert("❌ Tu suscripción ha expirado el " + expiracion.toLocaleDateString());
+          }
+        }
+
+        // 4. Validar MAC
+        mostrarLoader("Verificando dispositivo...");
+        const { data: devices, error: errDev } = await _supabase
+          .from('dispositivos')
+          .select('*')
+          .eq('usuario_id', user.id)
+          .eq('mac_address', deviceMAC);
+
+        if (errDev) throw new Error(errDev.message);
+
+        if (!devices || devices.length === 0 || !devices[0].activo) {
+          ocultarLoader();
+          return alert("❌ MAC no autorizada: " + deviceMAC + "\nRegístrala en el panel Admin.");
+        }
+
+        if (remember) {
+          localStorage.setItem("USER_SAVED", u);
+          localStorage.setItem("PASS_SAVED", p);
+        } else {
+          localStorage.removeItem("USER_SAVED");
+          localStorage.removeItem("PASS_SAVED");
+        }
+
+        obtenerListasM3U(user.id);
+
+      } catch (e) {
+        ocultarLoader();
+        alert("❌ Error de red/conexión: " + e.message);
+      }
+    }
+
+    function verificarAutologin() {
+      const u = localStorage.getItem("USER_SAVED");
+      const p = localStorage.getItem("PASS_SAVED");
+      if (u && p) {
+        document.getElementById('user-input').value = u;
+        document.getElementById('pass-input').value = p;
+        validarYEntrar();
+      }
+    }
+
+    async function obtenerListasM3U(userId) {
+      mostrarLoader("Cargando canales...");
+      try {
+        const { data: listas, error } = await _supabase
+          .from('listas_m3u')
+          .select('*')
+          .eq('usuario_id', userId);
+
+        if (error) throw new Error(error.message);
+
+        if (!listas || listas.length === 0) {
+          ocultarLoader();
+          return alert("No hay listas IPTV vinculadas a esta cuenta.");
+        }
+
+        listasUsuario = listas;
+        const select = document.getElementById('m3u-select');
+        select.innerHTML = '';
+        listas.forEach((l, idx) => {
+          select.innerHTML += `<option value="${idx}">${l.nombre_lista}</option>`;
+        });
+
+        cargarM3U(listas[0].url_m3u);
+
+      } catch (e) {
+        ocultarLoader();
+        alert("Error al obtener la lista de canales: " + e.message);
+      }
+    }
+
+    function cambiarListaM3U() {
+      const idx = document.getElementById('m3u-select').value;
+      cargarM3U(listasUsuario[idx].url_m3u);
+    }
+
+    async function cargarM3U(url) {
+      mostrarLoader("Descargando lista M3U...");
+      try {
+        const res = await fetch(url);
+        const text = await res.text();
+        parsearContenidoM3U(text);
+        ocultarLoader();
+        cambiarPantalla('main-screen');
+      } catch (e) {
+        ocultarLoader();
+        alert("No se pudo cargar la URL M3U del servidor.");
+      }
+    }
+
+    function parsearContenidoM3U(m3u) {
+      itemsParseados = [];
+      const lines = m3u.split('\n');
+      let current = {};
+
+      for (let line of lines) {
+        line = line.trim();
+        if (line.startsWith('#EXTINF:')) {
+          const title = line.split(',')[1] || "Canal Sin Nombre";
+          const logoMatch = line.match(/tvg-logo="([^"]+)"/);
+          const groupMatch = line.match(/group-title="([^"]+)"/);
+
+          current = {
+            name: title,
+            logo: logoMatch ? logoMatch[1] : null,
+            group: groupMatch ? groupMatch[1] : "General"
+          };
+        } else if (line.startsWith('http')) {
+          current.url = line;
+          itemsParseados.push(current);
+          current = {};
+        }
+      }
+
+      const catMap = {};
+      itemsParseados.forEach(i => catMap[i.group] = true);
+
+      const catSelect = document.getElementById('category-select');
+      catSelect.innerHTML = '';
+      Object.keys(catMap).sort().forEach(cat => {
+        catSelect.innerHTML += `<option value="${cat}">${cat}</option>`;
+      });
+
+      renderizarCanalesPorCategoria();
+    }
+
+    function renderizarCanalesPorCategoria() {
+      const selectedCat = document.getElementById('category-select').value;
+      const listContainer = document.getElementById('channel-list');
+      listContainer.innerHTML = '';
+
+      const items = itemsParseados.filter(i => i.group === selectedCat);
+
+      items.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'channel-item';
+        const logo = item.logo ? item.logo : 'https://via.placeholder.com/32/151c28/00d2ff?text=TV';
+
+        div.innerHTML = `
+          <img src="${logo}" onerror="this.src='https://via.placeholder.com/32/151c28/00d2ff?text=TV'">
+          <div class="ch-name">${item.name}</div>
+        `;
+        div.onclick = () => reproducirStream(item);
+        listContainer.appendChild(div);
+      });
+    }
+
+    function reproducirStream(item) {
+      document.getElementById('epg-title').innerText = item.name;
+      document.getElementById('epg-desc').innerText = "Categoría: " + item.group;
+
+      const video = document.getElementById('exoplayer');
+
+      if (hlsPlayer) {
+        hlsPlayer.destroy();
+      }
+
+      if (Hls.isSupported() && (item.url.includes('.m3u8') || item.url.includes('m3u_plus'))) {
+        hlsPlayer = new Hls();
+        hlsPlayer.loadSource(item.url);
+        hlsPlayer.attachMedia(video);
+        hlsPlayer.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+      } else {
+        video.src = item.url;
+        video.play();
+      }
+    }
+
+    function cerrarSesion() {
+      localStorage.removeItem("USER_SAVED");
+      localStorage.removeItem("PASS_SAVED");
+      location.reload();
+    }
+
+    function cambiarPantalla(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+      document.getElementById(id).classList.add('active-screen');
+    }
+
+    function mostrarLoader(msg) {
+      document.getElementById('loader-msg').innerText = msg;
+      document.getElementById('loader').style.display = 'flex';
+    }
+
+    function ocultarLoader() {
+      document.getElementById('loader').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
