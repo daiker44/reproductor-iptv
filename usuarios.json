@@ -1,0 +1,9 @@
+[
+  {
+    "usuario": "davidson444",
+    "password": "1234",
+    "activo": true,
+    "mac": "F4:B3:64:B0:F0:18",
+    "lista_m3u": "https://orus.serveftp.com:61523/get.php?username=moyano.santo.tomas&password=7236t7&type=m3u_plus"
+  }
+]
