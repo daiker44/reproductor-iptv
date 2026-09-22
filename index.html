@@ -6,14 +6,24 @@
   <title>XCIPTV Player Pro</title>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <style>
-    :root { --bg-main: #0a0e17; --bg-card: #151c28; --accent-blue: #00d2ff; --accent-orange: #ff9900; --text: #ffffff; --text-muted: #8a99ad; --border: #222d3d; }
+    :root { 
+      --bg-main: #0a0e17; 
+      --bg-card: #151c28; 
+      --accent-blue: #00d2ff; 
+      --accent-orange: #ff9900; 
+      --accent-green: #00e676;
+      --text: #ffffff; 
+      --text-muted: #8a99ad; 
+      --border: #222d3d; 
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; user-select: none; }
     body { background-color: var(--bg-main); color: var(--text); width: 100vw; height: 100vh; overflow: hidden; display: flex; }
     
-    .screen { display: none; width: 100%; height: 100%; }
+    .screen { display: none; width: 100%; height: 100%; flex-direction: column; }
     .active-screen { display: flex !important; }
 
-    #auth-screen { justify-content: center; align-items: center; background: radial-gradient(circle, #151c28 0%, #0a0e17 100%); flex-direction: column; }
+    /* AUTH SCREEN */
+    #auth-screen { justify-content: center; align-items: center; background: radial-gradient(circle, #151c28 0%, #0a0e17 100%); }
     .login-box { background: var(--bg-card); padding: 25px; border-radius: 12px; width: 90%; max-width: 380px; border: 1px solid var(--border); text-align: center; }
     .login-box h1 { color: var(--accent-blue); font-size: 22px; margin-bottom: 15px; font-weight: 800; }
     
@@ -27,17 +37,27 @@
     .remember-container { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 10px 0; font-size: 11px; color: var(--text-muted); }
     .btn-login { width: 100%; padding: 12px; background: linear-gradient(90deg, #00d2ff, #0072ff); border: none; color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 13px; margin-top: 8px; text-transform: uppercase; }
 
-    #main-screen { flex-direction: column; }
+    /* HEADER */
     .top-header { height: 50px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 15px; }
-    .brand-logo { font-size: 16px; font-weight: 900; color: var(--accent-blue); }
-    
+    .brand-logo { font-size: 16px; font-weight: 900; color: var(--accent-blue); cursor: pointer; }
     .list-selector-container { display: flex; align-items: center; gap: 8px; }
     .list-select { background: #0b1019; color: #fff; border: 1px solid var(--border); padding: 6px 10px; border-radius: 6px; font-size: 11px; outline: none; }
 
+    /* DASHBOARD (SELECCIÓN PRINCIPAL) */
+    .dashboard-container { flex: 1; display: flex; justify-content: center; align-items: center; gap: 20px; padding: 20px; flex-wrap: wrap; }
+    .dash-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; width: 220px; height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
+    .dash-card:hover { transform: translateY(-5px); border-color: var(--accent-blue); }
+    .dash-icon { font-size: 40px; margin-bottom: 10px; }
+    .dash-title { font-size: 16px; font-weight: bold; }
+    .dash-count { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+    /* CONTENIDO DEL REPRODUCTOR */
     .content-container { flex: 1; display: flex; overflow: hidden; }
     .channels-sidebar { width: 280px; background: #0d121d; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-    .cat-dropdown { padding: 8px; background: var(--bg-card); border-bottom: 1px solid var(--border); }
-    .cat-dropdown select { width: 100%; padding: 6px; background: #0b1019; color: #fff; border: 1px solid var(--border); border-radius: 4px; font-size: 11px; outline: none; }
+    .cat-dropdown { padding: 8px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; gap: 5px; }
+    .cat-dropdown select { flex: 1; padding: 6px; background: #0b1019; color: #fff; border: 1px solid var(--border); border-radius: 4px; font-size: 11px; outline: none; }
+    .btn-back-dash { background: var(--accent-blue); color: #000; border: none; padding: 5px 8px; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+
     .channel-list { flex: 1; overflow-y: auto; padding: 6px; }
     .channel-item { display: flex; align-items: center; padding: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 5px; margin-bottom: 5px; cursor: pointer; }
     .channel-item img { width: 32px; height: 32px; object-fit: contain; margin-right: 8px; background: #000; border-radius: 4px; }
@@ -50,6 +70,7 @@
     .epg-title { font-size: 14px; font-weight: bold; color: var(--accent-blue); margin-bottom: 4px; }
     .epg-desc { font-size: 11px; color: var(--text-muted); }
 
+    /* LOADER */
     .loader { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(10,14,23,0.95); display:none; flex-direction:column; justify-content:center; align-items:center; z-index:99; }
     .spinner { width: 35px; height: 35px; border: 3px solid var(--border); border-top-color: var(--accent-blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -57,7 +78,7 @@
 </head>
 <body>
 
-  <!-- PANTALLA DE LOGIN -->
+  <!-- PANTALLA LOGIN -->
   <div id="auth-screen" class="screen active-screen">
     <div class="login-box">
       <h1>XCIPTV PLAYER</h1>
@@ -78,12 +99,40 @@
     </div>
   </div>
 
-  <!-- PANTALLA PRINCIPAL -->
+  <!-- PANTALLA DASHBOARD PRINCIPAL -->
+  <div id="dash-screen" class="screen">
+    <div class="top-header">
+      <div class="brand-logo">XCIPTV PLAYER</div>
+      <div class="list-selector-container">
+        <select id="m3u-select-dash" class="list-select" onchange="cambiarListaM3U('dash')"></select>
+        <button onclick="cerrarSesion()" style="background:#da3633; border:none; color:#fff; padding:5px 8px; border-radius:4px; font-size:10px; cursor:pointer;">Salir</button>
+      </div>
+    </div>
+    <div class="dashboard-container">
+      <div class="dash-card" onclick="abrirSeccion('live')">
+        <div class="dash-icon">📺</div>
+        <div class="dash-title" style="color:var(--accent-blue);">TV EN VIVO</div>
+        <div class="dash-count" id="cnt-live">0 canales</div>
+      </div>
+      <div class="dash-card" onclick="abrirSeccion('movies')">
+        <div class="dash-icon">🎬</div>
+        <div class="dash-title" style="color:var(--accent-orange);">PELÍCULAS</div>
+        <div class="dash-count" id="cnt-movies">0 títulos</div>
+      </div>
+      <div class="dash-card" onclick="abrirSeccion('series')">
+        <div class="dash-icon">🍿</div>
+        <div class="dash-title" style="color:var(--accent-green);">SERIES</div>
+        <div class="dash-count" id="cnt-series">0 títulos</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANTALLA REPRODUCTOR -->
   <div id="main-screen" class="screen">
     <div class="top-header">
-      <div class="brand-logo">XCIPTV</div>
+      <div class="brand-logo" onclick="volverADashboard()">⬅ INICIO</div>
       <div class="list-selector-container">
-        <select id="m3u-select" class="list-select" onchange="cambiarListaM3U()"></select>
+        <select id="m3u-select-main" class="list-select" onchange="cambiarListaM3U('main')"></select>
         <button onclick="cerrarSesion()" style="background:#da3633; border:none; color:#fff; padding:5px 8px; border-radius:4px; font-size:10px; cursor:pointer;">Salir</button>
       </div>
     </div>
@@ -91,6 +140,7 @@
     <div class="content-container">
       <div class="channels-sidebar">
         <div class="cat-dropdown">
+          <button class="btn-back-dash" onclick="volverADashboard()">Menú</button>
           <select id="category-select" onchange="renderizarCanalesPorCategoria()"></select>
         </div>
         <div class="channel-list" id="channel-list"></div>
@@ -100,8 +150,8 @@
           <video id="exoplayer" controls autoplay></video>
         </div>
         <div class="epg-panel">
-          <div id="epg-title" class="epg-title">Selecciona un canal</div>
-          <div id="epg-desc" class="epg-desc">Presiona un canal para iniciar la reproducción.</div>
+          <div id="epg-title" class="epg-title">Selecciona un elemento</div>
+          <div id="epg-desc" class="epg-desc">Presiona sobre un canal, película o serie para reproducir.</div>
         </div>
       </div>
     </div>
@@ -118,8 +168,12 @@
 
     let deviceMAC = "";
     let usuarioActual = null;
-    let itemsParseados = [];
     let hlsPlayer = null;
+
+    let itemsLive = [];
+    let itemsMovies = [];
+    let itemsSeries = [];
+    let tipoSeccionActual = 'live'; // 'live', 'movies', 'series'
 
     window.onload = () => {
       obtenerMAC();
@@ -176,7 +230,6 @@
           return alert("❌ Tu cuenta está desactivada.");
         }
 
-        // Validar expiración
         if (uEncontrado.expiracion) {
           const hoy = new Date().toISOString().split('T')[0];
           if (hoy > uEncontrado.expiracion) {
@@ -185,10 +238,9 @@
           }
         }
 
-        // Validar MAC
         if (uEncontrado.mac && uEncontrado.mac.toUpperCase() !== deviceMAC.toUpperCase()) {
           ocultarLoader();
-          return alert("❌ MAC no autorizada: " + deviceMAC + "\nRegistra esta MAC en la cuenta.");
+          return alert("❌ MAC no autorizada: " + deviceMAC);
         }
 
         usuarioActual = uEncontrado;
@@ -201,23 +253,25 @@
           localStorage.removeItem("PASS_SAVED");
         }
 
-        // Cargar listas en el desplegable
-        const selectListas = document.getElementById('m3u-select');
-        selectListas.innerHTML = '';
+        // Poblar selectores de listas M3U
+        const selDash = document.getElementById('m3u-select-dash');
+        const selMain = document.getElementById('m3u-select-main');
+        selDash.innerHTML = '';
+        selMain.innerHTML = '';
         
-        if (usuarioActual.listas_m3u && usuarioActual.listas_m3u.length > 0) {
-          usuarioActual.listas_m3u.forEach((l, idx) => {
-            selectListas.innerHTML += `<option value="${idx}">${l.nombre}</option>`;
-          });
-          cargarM3U(usuarioActual.listas_m3u[0].url);
-        } else if (usuarioActual.lista_m3u) {
-          // Compatibilidad con formato antiguo de 1 sola lista
-          selectListas.innerHTML = `<option value="0">Lista Principal</option>`;
-          cargarM3U(usuarioActual.lista_m3u);
-        } else {
+        const listas = usuarioActual.listas_m3u || (usuarioActual.lista_m3u ? [{nombre:"Lista Principal", url:usuarioActual.lista_m3u}] : []);
+
+        if (listas.length === 0) {
           ocultarLoader();
-          alert("El usuario no tiene listas M3U asignadas.");
+          return alert("El usuario no tiene listas M3U asignadas.");
         }
+
+        listas.forEach((l, idx) => {
+          selDash.innerHTML += `<option value="${idx}">${l.nombre}</option>`;
+          selMain.innerHTML += `<option value="${idx}">${l.nombre}</option>`;
+        });
+
+        cargarM3U(listas[0].url);
 
       } catch (e) {
         ocultarLoader();
@@ -225,10 +279,14 @@
       }
     }
 
-    function cambiarListaM3U() {
-      const idx = document.getElementById('m3u-select').value;
-      if (usuarioActual && usuarioActual.listas_m3u[idx]) {
-        cargarM3U(usuarioActual.listas_m3u[idx].url);
+    function cambiarListaM3U(origen) {
+      const idx = document.getElementById(origen === 'dash' ? 'm3u-select-dash' : 'm3u-select-main').value;
+      document.getElementById('m3u-select-dash').value = idx;
+      document.getElementById('m3u-select-main').value = idx;
+      
+      const listas = usuarioActual.listas_m3u || [{nombre:"Lista Principal", url:usuarioActual.lista_m3u}];
+      if (listas[idx]) {
+        cargarM3U(listas[idx].url);
       }
     }
 
@@ -243,28 +301,31 @@
     }
 
     async function cargarM3U(url) {
-      mostrarLoader("Descargando canales...");
+      mostrarLoader("Analizando lista de contenidos...");
       try {
         const res = await fetch(url);
         const text = await res.text();
-        parsearContenidoM3U(text);
+        parsearYClasificarM3U(text);
         ocultarLoader();
-        cambiarPantalla('main-screen');
+        cambiarPantalla('dash-screen');
       } catch (e) {
         ocultarLoader();
         alert("No se pudo cargar la URL M3U.");
       }
     }
 
-    function parsearContenidoM3U(m3u) {
-      itemsParseados = [];
+    function parsearYClasificarM3U(m3u) {
+      itemsLive = [];
+      itemsMovies = [];
+      itemsSeries = [];
+
       const lines = m3u.split('\n');
       let current = {};
 
       for (let line of lines) {
         line = line.trim();
         if (line.startsWith('#EXTINF:')) {
-          const title = line.split(',')[1] || "Canal Sin Nombre";
+          const title = line.split(',')[1] || "Sin Nombre";
           const logoMatch = line.match(/tvg-logo="([^"]+)"/);
           const groupMatch = line.match(/group-title="([^"]+)"/);
 
@@ -275,13 +336,39 @@
           };
         } else if (line.startsWith('http')) {
           current.url = line;
-          itemsParseados.push(current);
+          
+          const g = current.group.toLowerCase();
+          const u = line.toLowerCase();
+
+          // Clasificación automática
+          if (g.includes('movie') || g.includes('pelicula') || g.includes('vod') || u.includes('/movie/')) {
+            itemsMovies.push(current);
+          } else if (g.includes('serie') || u.includes('/series/')) {
+            itemsSeries.push(current);
+          } else {
+            itemsLive.push(current);
+          }
           current = {};
         }
       }
 
+      // Actualizar contadores en Dashboard
+      document.getElementById('cnt-live').innerText = itemsLive.length + " canales";
+      document.getElementById('cnt-movies').innerText = itemsMovies.length + " títulos";
+      document.getElementById('cnt-series').innerText = itemsSeries.length + " títulos";
+    }
+
+    function abrirSeccion(tipo) {
+      tipoSeccionActual = tipo;
+      let items = tipo === 'live' ? itemsLive : (tipo === 'movies' ? itemsMovies : itemsSeries);
+
+      if (items.length === 0) {
+        return alert("No se encontraron contenidos para esta categoría en la lista actual.");
+      }
+
+      // Agrupar categorías
       const catMap = {};
-      itemsParseados.forEach(i => catMap[i.group] = true);
+      items.forEach(i => catMap[i.group] = true);
 
       const catSelect = document.getElementById('category-select');
       catSelect.innerHTML = '';
@@ -290,6 +377,7 @@
       });
 
       renderizarCanalesPorCategoria();
+      cambiarPantalla('main-screen');
     }
 
     function renderizarCanalesPorCategoria() {
@@ -297,9 +385,10 @@
       const listContainer = document.getElementById('channel-list');
       listContainer.innerHTML = '';
 
-      const items = itemsParseados.filter(i => i.group === selectedCat);
+      let items = tipoSeccionActual === 'live' ? itemsLive : (tipoSeccionActual === 'movies' ? itemsMovies : itemsSeries);
+      const filtrados = items.filter(i => i.group === selectedCat);
 
-      items.forEach(item => {
+      filtrados.forEach(item => {
         const div = document.createElement('div');
         div.className = 'channel-item';
         const logo = item.logo ? item.logo : 'https://via.placeholder.com/32/151c28/00d2ff?text=TV';
@@ -332,6 +421,10 @@
         video.src = item.url;
         video.play();
       }
+    }
+
+    function volverADashboard() {
+      cambiarPantalla('dash-screen');
     }
 
     function cerrarSesion() {
