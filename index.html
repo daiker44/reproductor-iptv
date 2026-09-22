@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>IPTV Player Pro</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <style>
     :root { --bg-main: #0a0e17; --bg-card: #151c28; --accent-blue: #00d2ff; --accent-orange: #ff9900; --text: #ffffff; --text-muted: #8a99ad; --border: #222d3d; }
@@ -31,8 +30,6 @@
     #main-screen { flex-direction: column; }
     .top-header { height: 50px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 15px; }
     .brand-logo { font-size: 16px; font-weight: 900; color: var(--accent-blue); }
-    .list-selector-container { display: flex; align-items: center; gap: 8px; }
-    .list-select { background: #0b1019; color: #fff; border: 1px solid var(--border); padding: 5px 10px; border-radius: 6px; font-size: 11px; outline: none; }
     
     .content-container { flex: 1; display: flex; overflow: hidden; }
     .channels-sidebar { width: 280px; background: #0d121d; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
@@ -82,10 +79,7 @@
   <div id="main-screen" class="screen">
     <div class="top-header">
       <div class="brand-logo">XCIPTV</div>
-      <div class="list-selector-container">
-        <select id="m3u-select" class="list-select" onchange="cambiarListaM3U()"></select>
-        <button onclick="cerrarSesion()" style="background:#da3633; border:none; color:#fff; padding:5px 8px; border-radius:4px; font-size:10px; cursor:pointer;">Salir</button>
-      </div>
+      <button onclick="cerrarSesion()" style="background:#da3633; border:none; color:#fff; padding:5px 8px; border-radius:4px; font-size:10px; cursor:pointer;">Salir</button>
     </div>
 
     <div class="content-container">
@@ -101,7 +95,7 @@
         </div>
         <div class="epg-panel">
           <div id="epg-title" class="epg-title">Selecciona un canal</div>
-          <div id="epg-desc" class="epg-desc">Presiona un canal de la lista izquierda para iniciar la reproducción.</div>
+          <div id="epg-desc" class="epg-desc">Presiona un canal para iniciar la reproducción.</div>
         </div>
       </div>
     </div>
@@ -114,13 +108,10 @@
   </div>
 
   <script>
-    const SUPABASE_URL = "https://cmdnbchacerfdimchave.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_ECb7qfeeXlYdimtjiKKrfQ_GBio9d0t";
-
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // RUTA AL ARCHIVO DE USUARIOS
+    const DB_FILE_URL = "https://daiker44.github.io/reproductor-iptv/usuarios.json";
 
     let deviceMAC = "";
-    let listasUsuario = [];
     let itemsParseados = [];
     let hlsPlayer = null;
 
@@ -156,50 +147,35 @@
 
       if (!u || !p) return alert("Por favor ingresa usuario y contraseña.");
 
-      mostrarLoader("Validando usuario...");
+      mostrarLoader("Validando con el servidor...");
 
       try {
-        const { data: users, error: errUser } = await _supabase
-          .from('usuarios')
-          .select('*')
-          .eq('usuario', u)
-          .eq('password', p);
+        // Descarga el archivo usuarios.json con un timestamp para evitar cache antigua
+        const res = await fetch(DB_FILE_URL + "?t=" + new Date().getTime());
+        if (!res.ok) throw new Error("No se pudo leer la lista de usuarios.");
+        
+        const usuarios = await res.json();
 
-        if (errUser) throw new Error(errUser.message);
+        // Buscar coincidencias
+        const usuarioEncontrado = usuarios.find(item => 
+          item.usuario.toLowerCase() === u.toLowerCase() && 
+          item.password === p
+        );
 
-        if (!users || users.length === 0) {
+        if (!usuarioEncontrado) {
           ocultarLoader();
           return alert("❌ Usuario o contraseña incorrectos.");
         }
 
-        const user = users[0];
-
-        if (!user.activo) {
+        if (!usuarioEncontrado.activo) {
           ocultarLoader();
           return alert("❌ Tu cuenta está desactivada.");
         }
 
-        if (user.fecha_expiracion) {
-          const ahora = new Date();
-          const expiracion = new Date(user.fecha_expiracion);
-          if (ahora > expiracion) {
-            ocultarLoader();
-            return alert("❌ Tu suscripción ha expirado el " + expiracion.toLocaleDateString());
-          }
-        }
-
-        mostrarLoader("Verificando dispositivo...");
-        const { data: devices, error: errDev } = await _supabase
-          .from('dispositivos')
-          .select('*')
-          .eq('usuario_id', user.id)
-          .eq('mac_address', deviceMAC);
-
-        if (errDev) throw new Error(errDev.message);
-
-        if (!devices || devices.length === 0 || !devices[0].activo) {
+        // Validar MAC (si la MAC configurada en JSON no coincide con la del teléfono)
+        if (usuarioEncontrado.mac && usuarioEncontrado.mac.toUpperCase() !== deviceMAC.toUpperCase()) {
           ocultarLoader();
-          return alert("❌ MAC no autorizada: " + deviceMAC + "\nRegístrala en el panel Admin.");
+          return alert("❌ MAC no autorizada: " + deviceMAC + "\nRegistra esta MAC en tu archivo usuarios.json.");
         }
 
         if (remember) {
@@ -210,11 +186,11 @@
           localStorage.removeItem("PASS_SAVED");
         }
 
-        obtenerListasM3U(user.id);
+        cargarM3U(usuarioEncontrado.lista_m3u);
 
       } catch (e) {
         ocultarLoader();
-        alert("❌ Error de red/conexión: " + e.message);
+        alert("❌ Error de conexión: " + e.message);
       }
     }
 
@@ -228,43 +204,8 @@
       }
     }
 
-    async function obtenerListasM3U(userId) {
-      mostrarLoader("Cargando canales...");
-      try {
-        const { data: listas, error } = await _supabase
-          .from('listas_m3u')
-          .select('*')
-          .eq('usuario_id', userId);
-
-        if (error) throw new Error(error.message);
-
-        if (!listas || listas.length === 0) {
-          ocultarLoader();
-          return alert("No hay listas IPTV vinculadas a esta cuenta.");
-        }
-
-        listasUsuario = listas;
-        const select = document.getElementById('m3u-select');
-        select.innerHTML = '';
-        listas.forEach((l, idx) => {
-          select.innerHTML += `<option value="${idx}">${l.nombre_lista}</option>`;
-        });
-
-        cargarM3U(listas[0].url_m3u);
-
-      } catch (e) {
-        ocultarLoader();
-        alert("Error al obtener la lista de canales: " + e.message);
-      }
-    }
-
-    function cambiarListaM3U() {
-      const idx = document.getElementById('m3u-select').value;
-      cargarM3U(listasUsuario[idx].url_m3u);
-    }
-
     async function cargarM3U(url) {
-      mostrarLoader("Descargando lista M3U...");
+      mostrarLoader("Descargando canales...");
       try {
         const res = await fetch(url);
         const text = await res.text();
@@ -273,7 +214,7 @@
         cambiarPantalla('main-screen');
       } catch (e) {
         ocultarLoader();
-        alert("No se pudo cargar la URL M3U del servidor.");
+        alert("No se pudo cargar la URL M3U.");
       }
     }
 
