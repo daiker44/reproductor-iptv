@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>IPTV Player Pro</title>
+  <title>XCIPTV Player Pro</title>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <style>
     :root { --bg-main: #0a0e17; --bg-card: #151c28; --accent-blue: #00d2ff; --accent-orange: #ff9900; --text: #ffffff; --text-muted: #8a99ad; --border: #222d3d; }
@@ -31,6 +31,9 @@
     .top-header { height: 50px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 15px; }
     .brand-logo { font-size: 16px; font-weight: 900; color: var(--accent-blue); }
     
+    .list-selector-container { display: flex; align-items: center; gap: 8px; }
+    .list-select { background: #0b1019; color: #fff; border: 1px solid var(--border); padding: 6px 10px; border-radius: 6px; font-size: 11px; outline: none; }
+
     .content-container { flex: 1; display: flex; overflow: hidden; }
     .channels-sidebar { width: 280px; background: #0d121d; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
     .cat-dropdown { padding: 8px; background: var(--bg-card); border-bottom: 1px solid var(--border); }
@@ -79,7 +82,10 @@
   <div id="main-screen" class="screen">
     <div class="top-header">
       <div class="brand-logo">XCIPTV</div>
-      <button onclick="cerrarSesion()" style="background:#da3633; border:none; color:#fff; padding:5px 8px; border-radius:4px; font-size:10px; cursor:pointer;">Salir</button>
+      <div class="list-selector-container">
+        <select id="m3u-select" class="list-select" onchange="cambiarListaM3U()"></select>
+        <button onclick="cerrarSesion()" style="background:#da3633; border:none; color:#fff; padding:5px 8px; border-radius:4px; font-size:10px; cursor:pointer;">Salir</button>
+      </div>
     </div>
 
     <div class="content-container">
@@ -108,10 +114,10 @@
   </div>
 
   <script>
-    // RUTA AL ARCHIVO DE USUARIOS
     const DB_FILE_URL = "https://daiker44.github.io/reproductor-iptv/usuarios.json";
 
     let deviceMAC = "";
+    let usuarioActual = null;
     let itemsParseados = [];
     let hlsPlayer = null;
 
@@ -150,33 +156,42 @@
       mostrarLoader("Validando con el servidor...");
 
       try {
-        // Descarga el archivo usuarios.json con un timestamp para evitar cache antigua
         const res = await fetch(DB_FILE_URL + "?t=" + new Date().getTime());
         if (!res.ok) throw new Error("No se pudo leer la lista de usuarios.");
         
         const usuarios = await res.json();
 
-        // Buscar coincidencias
-        const usuarioEncontrado = usuarios.find(item => 
+        const uEncontrado = usuarios.find(item => 
           item.usuario.toLowerCase() === u.toLowerCase() && 
           item.password === p
         );
 
-        if (!usuarioEncontrado) {
+        if (!uEncontrado) {
           ocultarLoader();
           return alert("❌ Usuario o contraseña incorrectos.");
         }
 
-        if (!usuarioEncontrado.activo) {
+        if (!uEncontrado.activo) {
           ocultarLoader();
           return alert("❌ Tu cuenta está desactivada.");
         }
 
-        // Validar MAC (si la MAC configurada en JSON no coincide con la del teléfono)
-        if (usuarioEncontrado.mac && usuarioEncontrado.mac.toUpperCase() !== deviceMAC.toUpperCase()) {
-          ocultarLoader();
-          return alert("❌ MAC no autorizada: " + deviceMAC + "\nRegistra esta MAC en tu archivo usuarios.json.");
+        // Validar expiración
+        if (uEncontrado.expiracion) {
+          const hoy = new Date().toISOString().split('T')[0];
+          if (hoy > uEncontrado.expiracion) {
+            ocultarLoader();
+            return alert("❌ Tu suscripción venció el " + uEncontrado.expiracion);
+          }
         }
+
+        // Validar MAC
+        if (uEncontrado.mac && uEncontrado.mac.toUpperCase() !== deviceMAC.toUpperCase()) {
+          ocultarLoader();
+          return alert("❌ MAC no autorizada: " + deviceMAC + "\nRegistra esta MAC en la cuenta.");
+        }
+
+        usuarioActual = uEncontrado;
 
         if (remember) {
           localStorage.setItem("USER_SAVED", u);
@@ -186,11 +201,34 @@
           localStorage.removeItem("PASS_SAVED");
         }
 
-        cargarM3U(usuarioEncontrado.lista_m3u);
+        // Cargar listas en el desplegable
+        const selectListas = document.getElementById('m3u-select');
+        selectListas.innerHTML = '';
+        
+        if (usuarioActual.listas_m3u && usuarioActual.listas_m3u.length > 0) {
+          usuarioActual.listas_m3u.forEach((l, idx) => {
+            selectListas.innerHTML += `<option value="${idx}">${l.nombre}</option>`;
+          });
+          cargarM3U(usuarioActual.listas_m3u[0].url);
+        } else if (usuarioActual.lista_m3u) {
+          // Compatibilidad con formato antiguo de 1 sola lista
+          selectListas.innerHTML = `<option value="0">Lista Principal</option>`;
+          cargarM3U(usuarioActual.lista_m3u);
+        } else {
+          ocultarLoader();
+          alert("El usuario no tiene listas M3U asignadas.");
+        }
 
       } catch (e) {
         ocultarLoader();
         alert("❌ Error de conexión: " + e.message);
+      }
+    }
+
+    function cambiarListaM3U() {
+      const idx = document.getElementById('m3u-select').value;
+      if (usuarioActual && usuarioActual.listas_m3u[idx]) {
+        cargarM3U(usuarioActual.listas_m3u[idx].url);
       }
     }
 
