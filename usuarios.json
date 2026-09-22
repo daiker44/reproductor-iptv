@@ -37,19 +37,6 @@
     "listas_m3u": [
       {
         "nombre": "Lista Principal",
-        "url": "http://asadelixir.com:80/get.php?username=HH9bDHruvJHy&password=3LYAE36aqssL&type=m3u_plus"
-      }
-    ]
-  },
-  {
-    "usuario": "mifire",
-    "password": "1234",
-    "activo": true,
-    "expiracion": "",
-    "mac": "81:22:8D:AF:30:0E",
-    "listas_m3u": [
-      {
-        "nombre": "Lista Principal",
         "url": "http://69.197.129.107:80/get.php?username=2.JOSE.ANTONIO&password=yFRuB9qQcVK4&type=m3u_plus"
       },
       {
