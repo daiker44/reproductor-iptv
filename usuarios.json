@@ -27,5 +27,18 @@
         "url": "https://orus.serveftp.com:61523/get.php?username=moyano.santo.tomas&password=7236t7&type=m3u_plus"
       }
     ]
+  },
+  {
+    "usuario": "davidson444",
+    "password": "1234",
+    "activo": true,
+    "expiracion": "",
+    "mac": "81:22:8D:AF:30:0E",
+    "listas_m3u": [
+      {
+        "nombre": "Lista Principal",
+        "url": "http://asadelixir.com:80/get.php?username=HH9bDHruvJHy&password=3LYAE36aqssL&type=m3u_plus"
+      }
+    ]
   }
 ]
