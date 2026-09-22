@@ -4,6 +4,15 @@
     "password": "1234",
     "activo": true,
     "mac": "F4:B3:64:B0:F0:18",
-    "lista_m3u": "https://orus.serveftp.com:61523/get.php?username=moyano.santo.tomas&password=7236t7&type=m3u_plus"
+    "listas_m3u": [
+      {
+        "nombre": "orus.serveftp",
+        "url": "https://orus.serveftp.com:61523/get.php?username=moyano.santo.tomas&password=7236t7&type=m3u_plus"
+      },
+      {
+        "nombre": "tachan",
+        "url": "https://av-ext.com:8443/get.php?username=Erubsan&password=5V5mToX7jF&type=m3u_plus"
+      }
+    ]
   }
 ]
