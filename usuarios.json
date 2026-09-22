@@ -14,5 +14,18 @@
         "url": "https://av-ext.com:8443/get.php?username=Erubsan&password=5V5mToX7jF&type=m3u_plus"
       }
     ]
+  },
+  {
+    "usuario": "jorge",
+    "password": "1234",
+    "activo": true,
+    "expiracion": "",
+    "mac": "96:10:2C:80:D6:B3",
+    "listas_m3u": [
+      {
+        "nombre": "Lista Principal",
+        "url": "https://orus.serveftp.com:61523/get.php?username=moyano.santo.tomas&password=7236t7&type=m3u_plus"
+      }
+    ]
   }
 ]
