@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>IPTV Player Pro</title>
-  <!-- Librería Oficial de Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Reproductor HLS -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <style>
     :root { --bg-main: #0a0e17; --bg-card: #151c28; --accent-blue: #00d2ff; --accent-orange: #ff9900; --text: #ffffff; --text-muted: #8a99ad; --border: #222d3d; }
@@ -117,9 +115,8 @@
 
   <script>
     const SUPABASE_URL = "https://cmdnbchacerfdimchave.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtZG5iY2hhY2VyZmRpbWNoYXZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwMzIwMjEsImV4cCI6MjEwNTYwODAyMX0.e9FTXFYmYLd0Jql6fn_BjKnvkV7SkWChwGIwHwOgqJ4";
+    const SUPABASE_KEY = "sb_publishable_ECb7qfeeXlYdimtjiKKrfQ_GBio9d0t";
 
-    // Inicializar el cliente oficial de Supabase
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let deviceMAC = "";
@@ -162,7 +159,6 @@
       mostrarLoader("Validando usuario...");
 
       try {
-        // 1. Validar Usuario y Contraseña usando la SDK Oficial
         const { data: users, error: errUser } = await _supabase
           .from('usuarios')
           .select('*')
@@ -178,13 +174,11 @@
 
         const user = users[0];
 
-        // 2. Estado Activo
         if (!user.activo) {
           ocultarLoader();
           return alert("❌ Tu cuenta está desactivada.");
         }
 
-        // 3. Expiración
         if (user.fecha_expiracion) {
           const ahora = new Date();
           const expiracion = new Date(user.fecha_expiracion);
@@ -194,7 +188,6 @@
           }
         }
 
-        // 4. Validar MAC
         mostrarLoader("Verificando dispositivo...");
         const { data: devices, error: errDev } = await _supabase
           .from('dispositivos')
