@@ -1,1 +1,54 @@
-[{"usuario":"davidson444","pass":"picasa","mac":"*","caducidad":"infinito","listas":[{"nombre":"Lista 1","m3u":"http://danzitas.online:80/get.php?username=enrique1234&password=B95LfJ5cj3HZ&type=m3u_plus"},{"nombre":"Lista 2","m3u":"https://55rg1pi6vw29z6781c9w.bluestreetzone.eu:443/get.php?username=Txuri&password=jkLCuUM3KcqYbjx&type=m3u_plus"}]},{"usuario":"1111","pass":"2222","mac":"*","caducidad":"2026-10-20","listas":[{"nombre":"Lista 1","m3u":"http://danzitas.online:80/get.php?username=enrique1234&password=B95LfJ5cj3HZ&type=m3u_plus"}]},{"usuario":"chito","pass":"cuponero","mac":"*","caducidad":"infinito","listas":[{"nombre":"1","m3u":"https://user.yajsgatya.com:443/get.php?username=prieto&password=BU7mFrnPrq&type=m3u_plus"}]}]
+[
+  {
+    "usuario": "davidson444",
+    "pass": "picasa",
+    "mac": "*",
+    "caducidad": "infinito",
+    "listas": [
+      {
+        "nombre": "Lista 1 - danzitas.online",
+        "m3u": "http://danzitas.online:80/get.php?username=enrique1234&password=B95LfJ5cj3HZ&type=m3u_plus"
+      },
+      {
+        "nombre": "Lista 2 - Psxbyz",
+        "m3u": "https://55rg1pi6vw29z6781c9w.bluestreetzone.eu:443/get.php?username=Txuri&password=jkLCuUM3KcqYbjx&type=m3u_plus"
+      },
+      {
+        "nombre": "Lista 3 - merlin",
+        "m3u": "http://atlantis.cat:2095/get.php?username=antonio837&password=6272829&type=m3u_plus"
+      },
+      {
+        "nombre": "Lista 4 - av-ext.com",
+        "m3u": "https://av-ext.com:8443/get.php?username=Tahures&password=w8cYJrzF7c&type=m3u_plus"
+      },
+      {
+        "nombre": "Lista 5 - asadelixir",
+        "m3u": "http://asadelixir.com:80/get.php?username=TAkwBNYVtnZH&password=vE5kGDJnsgvZ&type=m3u_plus"
+      }
+    ]
+  },
+  {
+    "usuario": "1111",
+    "pass": "2222",
+    "mac": "*",
+    "caducidad": "2026-10-20",
+    "listas": [
+      {
+        "nombre": "Lista 1",
+        "m3u": "http://danzitas.online:80/get.php?username=enrique1234&password=B95LfJ5cj3HZ&type=m3u_plus"
+      }
+    ]
+  },
+  {
+    "usuario": "chito",
+    "pass": "cuponero",
+    "mac": "*",
+    "caducidad": "infinito",
+    "listas": [
+      {
+        "nombre": "1",
+        "m3u": "https://user.yajsgatya.com:443/get.php?username=prieto&password=BU7mFrnPrq&type=m3u_plus"
+      }
+    ]
+  }
+]
