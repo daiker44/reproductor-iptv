@@ -1,0 +1,76 @@
+[
+  {
+    "usuario": "davidson444",
+    "pass": "picasa",
+    "mac": "_",
+	"caducidad": "infinito",
+    "listas": [
+      {
+        "nombre": "Lista 1 - danzitas.online",
+        "m3u": "http://danzitas.online:80/get.php?username=enrique1234&password=B95LfJ5cj3HZ&type=m3u_plus",
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+      },
+      {
+        "nombre": "Lista 2 - Psxbyz",
+        "m3u": "https://55rg1pi6vw29z6781c9w.bluestreetzone.eu:443/get.php?username=Txuri&password=jkLCuUM3KcqYbjx&type=m3u_plus",
+        "user_agent": "OTTPsxbyz/1.9.5 (AFTSS, Android 9)"
+      },
+      {
+        "nombre": "Lista 3 - merlin",
+        "m3u": "http://atlantis.cat:2095/get.php?username=antonio837&password=6272829&type=m3u_plus",
+        "user_agent": ""
+      },
+      {
+        "nombre": "Lista 4 - av-ext.com",
+        "m3u": "https://av-ext.com:8443/get.php?username=Tahures&password=w8cYjrzF7c&type=m3u_plus",
+        "user_agent": ""
+      },
+      {
+		"nombre": "Lista 5 - asadelixir",
+        "m3u": "http://asadelixir.com:80/get.php?username=TAkwBNYVtnZH&password=vE5kGDJnsgvZ&type=m3u_plus",
+        "user_agent": ""
+      }
+    ]
+  },
+  {
+    "usuario": "1111",
+    "pass": "2222",
+    "mac": "_",
+	"caducidad": "2026-10-20",
+    "listas": [
+      {
+        "nombre": "Lista 1 - danzitas.online",
+        "m3u": "http://danzitas.online:80/get.php?username=enrique1234&password=B95LfJ5cj3HZ&type=m3u_plus",
+        "user_agent": "IPTVSmarters/1.0"
+      },
+      {
+        "nombre": "Lista 2 - 98sdfnjjjsi21.info",
+        "m3u": "http://98sdfnjjjsi21.info:80/get.php?username=manyoysuegro&password=manyoysuegro17&type=m3u_plus",
+        "user_agent": ""
+      },
+      {
+        "nombre": "Lista 3 - main.hathorcloud",
+        "m3u": "http://main.hathorcloud.xyz:8080/get.php?username=nino&password=e78YAXRqZJkt&type=m3u_plus",
+        "user_agent": ""
+      }
+    ]
+  },
+  {
+  "usuario": "chito",
+  "pass": "cuponero",
+  "mac": "_",
+  "caducidad": "infinito",
+  "listas": [
+    {
+      "nombre": "1",
+      "m3u": "https://user.yajsgatya.com:443/get.php?username=prieto&password=BU7mFrnPrq&type=m3u_plus",
+      "user_agent": ""
+    },
+    {
+      "nombre": "2",
+      "m3u": "http://asadelixir.com:80/get.php?username=Antoniots&password=5520&type=m3u_plus",
+      "user_agent": ""
+    }
+  ]
+}
+]
