@@ -2,7 +2,7 @@
   {
     "usuario": "davidson444",
     "pass": "picasa",
-    "mac": "_",
+    "mac": "*",
 	"caducidad": "infinito",
     "listas": [
       {
@@ -35,7 +35,7 @@
   {
     "usuario": "1111",
     "pass": "2222",
-    "mac": "_",
+    "mac": "*",
 	"caducidad": "2026-10-20",
     "listas": [
       {
@@ -58,7 +58,7 @@
   {
   "usuario": "chito",
   "pass": "cuponero",
-  "mac": "_",
+  "mac": "*",
   "caducidad": "infinito",
   "listas": [
     {
