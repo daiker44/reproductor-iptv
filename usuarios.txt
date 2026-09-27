@@ -10,8 +10,8 @@
         "m3u": "http://danzitas.online:80/get.php?username=enrique1234&password=B95LfJ5cj3HZ&type=m3u_plus"
       },
       {
-        "nombre": "Lista 2 - Psxbyz",
-        "m3u": "https://55rg1pi6vw29z6781c9w.bluestreetzone.eu:443/get.php?username=Txuri&password=jkLCuUM3KcqYbjx&type=m3u_plus"
+        "nombre": "Lista 2 - backclock",
+        "m3u": "http://69.197.129.107:80/get.php?username=DUQUE24&password=6qDt9KzhvnBa&type=m3u_plus"
       },
       {
         "nombre": "Lista 3 - merlin",
@@ -22,8 +22,8 @@
         "m3u": "https://av-ext.com:8443/get.php?username=Tahures&password=w8cYJrzF7c&type=m3u_plus"
       },
       {
-        "nombre": "Lista 5 - asadelixir",
-        "m3u": "http://asadelixir.com:80/get.php?username=TAkwBNYVtnZH&password=vE5kGDJnsgvZ&type=m3u_plus"
+        "nombre": "Lista 5 - Dropbox",
+        "m3u": "https://www.dropbox.com/scl/fi/idpneje7fxl4d5f0h70qa/COMPLETA_zontes_newmax_one_443_Pablo26ag_20260924_115219.m3u?rlkey=4kg5mozsgo673e2expslfj2w8&st=g61zk8ej&dl=1"
       }
     ]
   },
