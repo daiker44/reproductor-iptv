@@ -19,7 +19,7 @@
       },
       {
         "nombre": "Lista 4 - av-ext.com",
-        "m3u": "https://av-ext.com:8443/get.php?username=Tahures&password=w8cYJrzF7c&type=m3u_plus"
+        "m3u": "https://av-ext.com:8443/get.php?username=Hugopenk&password=Xtn6xPtB4c&type=m3u_plus"
       },
       {
         "nombre": "Lista 5 - Dropbox",
