@@ -6,25 +6,29 @@
     "caducidad": "infinito",
     "listas": [
       {
-        "nombre": "Lista 1 - danzitas.online",
-        "m3u": "http://danzitas.online:80/get.php?username=enrique1234&password=B95LfJ5cj3HZ&type=m3u_plus"
+        "nombre": "Lista 1 - tuercebotas",
+        "m3u": "http://tuercebotas.com:80/get.php?username=josemaripi&password=rtMAxnMh2zd9&type=m3u_plus"
       },
       {
-        "nombre": "Lista 2 - backclock",
-        "m3u": "http://69.197.129.107:80/get.php?username=DUQUE24&password=6qDt9KzhvnBa&type=m3u_plus"
+        "nombre": "Lista 2 - orus",
+        "m3u": "https://orus.servehttp.com:27676/get.php?username=naranser01&password=qwerty123&type=m3u_plus"
       },
       {
         "nombre": "Lista 3 - merlin",
         "m3u": "http://atlantis.cat:2095/get.php?username=antonio837&password=6272829&type=m3u_plus"
       },
       {
-        "nombre": "Lista 4 - av-ext.com",
+        "nombre": "Lista 4 - tachan",
         "m3u": "https://av-ext.com:8443/get.php?username=Hugopenk&password=Xtn6xPtB4c&type=m3u_plus"
       },
       {
-        "nombre": "Lista 5 - Dropbox",
-        "m3u": "https://www.dropbox.com/scl/fi/idpneje7fxl4d5f0h70qa/COMPLETA_zontes_newmax_one_443_Pablo26ag_20260924_115219.m3u?rlkey=4kg5mozsgo673e2expslfj2w8&st=g61zk8ej&dl=1"
-      }
+        "nombre": "Lista 5 - resistencia",
+        "m3u": "http://zjv.iglesiadecristoredentor.org:2053/get.php?username=AjRJaaEaCPebYtEm&password=hu2QNwmJM5eZR5nE&type=m3u_plus"
+      },
+      {
+        "nombre": "Lista 6 - tiklok",
+        "m3u": "http://tiklok.fastf.art:80/get.php?username=XkSn5pxxTA&password=I4VDATr9VG&type=m3u_plus"
+    }
     ]
   },
   {
